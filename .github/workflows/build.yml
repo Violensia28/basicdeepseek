@@ -1,0 +1,31 @@
+name: Build Spot Welder Firmware
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup PlatformIO
+      uses: platformio/setup-platformio@v2
+      
+    - name: Build Firmware
+      run: |
+        pio run
+        echo "✅ FIRMWARE BUILD SUCCESS!"
+        
+    - name: Upload Firmware
+      uses: actions/upload-artifact@v3
+      with:
+        name: spot-welder-firmware
+        path: |
+          .pio/build/esp32dev/firmware.bin
+        retention-days: 30
