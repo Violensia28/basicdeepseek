@@ -1,31 +1,44 @@
-name: Build Spot Welder Firmware
+name: 🔧 Build Spot Welder Firmware
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:  # Manual trigger
 
 jobs:
-  build:
+  build-firmware:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
       
-    - name: Setup PlatformIO
+    - name: ⚙️ Setup PlatformIO
       uses: platformio/setup-platformio@v2
       
-    - name: Build Firmware
+    - name: 🏗️ Build Firmware
       run: |
+        echo "Building Spot Welder Firmware..."
         pio run
-        echo "✅ FIRMWARE BUILD SUCCESS!"
+        echo "✅ Build successful!"
         
-    - name: Upload Firmware
-      uses: actions/upload-artifact@v3
+    - name: 📦 List build files
+      run: |
+        echo "Build output:"
+        ls -la .pio/build/esp32dev/
+        
+    - name: 🚀 Upload Firmware
+      uses: actions/upload-artifact@v4
       with:
         name: spot-welder-firmware
-        path: |
-          .pio/build/esp32dev/firmware.bin
-        retention-days: 30
+        path: .pio/build/esp32dev/firmware.bin
+        retention-days: 90
+
+    - name: 📊 Build Info
+      run: |
+        echo "=== FIRMWARE BUILD COMPLETE ==="
+        echo "📁 File: firmware.bin"
+        echo "💾 Size: $(ls -lh .pio/build/esp32dev/firmware.bin | awk '{print $5}')"
+        echo "📋 SHA: $(sha256sum
